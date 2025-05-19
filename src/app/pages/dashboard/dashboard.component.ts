@@ -1,10 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { TransactionsComponent } from "../transactions/transactions.component";
+import { getAuth } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [TransactionsComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -17,13 +19,21 @@ export class DashboardComponent implements OnInit {
     this.authService.user$.subscribe((user) => {
       if(user) {
         this.authService.currentUserLoggedIn.set({
+          uid: user.uid,
           email: user.email!, 
-          username: user.displayName!
+          username: user.displayName!,
+          currency: "USD"
         })
       } else {
         this.authService.currentUserLoggedIn.set(null);
       }
       console.log(this.authService.currentUserLoggedIn());
+      
+      /*At the moment I get rid of this code because
+      I can get the data of new user by signal currentUserLoggedIn() */
+      //const registeredUser = this.authService.firebaseAut.currentUser
+      // console.log(registeredUser);
+      
       
     })
   }
