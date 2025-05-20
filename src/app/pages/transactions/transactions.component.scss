@@ -1,0 +1,14 @@
+.btn-options {
+    border: none;
+    background-color: transparent;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.title_options {
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.25rem 1rem;
+}
