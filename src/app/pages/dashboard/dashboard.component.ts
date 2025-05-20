@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { TransactionsComponent } from "../transactions/transactions.component";
@@ -12,6 +12,9 @@ import { getAuth } from '@angular/fire/auth';
 })
 export class DashboardComponent implements OnInit {
   authService = inject(AuthService);
+
+  //variable for to send TransactionComponent with Input
+  // userId = signal('');
   
   constructor(private router:Router){}
 
@@ -22,8 +25,12 @@ export class DashboardComponent implements OnInit {
           uid: user.uid,
           email: user.email!, 
           username: user.displayName!,
-          currency: "USD"
+          currency: '$'
         })
+
+        // this.userId.set(this.authService.currentUserLoggedIn()!.uid)
+        // console.log(this.userId());
+        
       } else {
         this.authService.currentUserLoggedIn.set(null);
       }
