@@ -1,0 +1,34 @@
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h2>Sign up</h2>
+            <img src="../../../assets/images/icon_register.svg" alt="icon_login" width="50px" height="50px">
+        </div>
+        <div class="card-body">
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                    <label for="id_username">Username:</label>
+                    <input type="email" class="form-control" id="id_username"
+                        placeholder="Enter email" formControlName="username">
+                </div>
+                <br>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Email address</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                        placeholder="Enter email" formControlName="email">
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
+                        else.</small>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Password</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" formControlName="password">
+                </div>
+                <div class="form-group">
+                    <p>Already have a user? <a class="font-weight-normal" routerLink="/login">Log in.</a></p>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
