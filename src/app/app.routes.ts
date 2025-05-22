@@ -3,6 +3,8 @@ import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { RedirectIfLoggedGuard } from './guards/redirect-if-logged.guard';
+import { TransactionsComponent } from './pages/transactions/transactions.component';
+import { MainComponent } from './pages/main/main.component';
 
 export const routes: Routes = [
     {
@@ -23,7 +25,12 @@ export const routes: Routes = [
         canActivate: [RedirectIfLoggedGuard]
     },
     {
-        path: 'dashboard',
-        component: DashboardComponent
+        path: 'main',
+        component: MainComponent,
+        children: [
+            {path: 'dashboard',
+        component: DashboardComponent,},
+            {path: 'transactions', component: TransactionsComponent}
+        ]
     }
 ];
