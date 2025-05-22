@@ -26,7 +26,7 @@ form = this.fb.nonNullable.group({
 
     this.authService.registerUser(valuesOfForm.email, valuesOfForm.password, valuesOfForm.username).subscribe({
       next: () => {
-        this.router.navigateByUrl("/dashboard");
+        this.router.navigateByUrl("/main/dashboard");
       }
       ,error: (err) => {
         console.log(err.code);

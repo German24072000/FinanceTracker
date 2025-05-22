@@ -1,10 +1,1 @@
-<p>{{this.authService.currentUserLoggedIn()?.username}} dashboard works!</p>
-<button type="button" class="btn btn-light" (click)="logout()"><img class="img_icon_logout" src="../../../assets/images/icon_logout.svg" alt="icon_logout" width="20" height="20" ></button>
-
-<!-- check that the logged-in user has retrieved the user id from the observable $user -->
-@if(this.authService.currentUserLoggedIn()?.uid != null && this.authService.currentUserLoggedIn()?.uid != undefined) {
-    <!-- <app-transactions [userId]="userId()"></app-transactions> -->
-     <app-transactions></app-transactions>
-}
-
-
+<p>dashboard works</p>

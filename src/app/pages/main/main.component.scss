@@ -1,0 +1,26 @@
+.titleApp {
+    font-size: 1.563em;
+}
+
+#btnlogout {
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,0.175);
+}
+
+#btnlogout:hover {
+    background-color: #f5f5f5;
+}
+
+#sidebarmenu button {
+    background-color: #fff;
+    border: none;
+}
+
+#sidebarmenu button:hover , #sidebarmenu .btn.active {
+background-color: #f5f5f5;
+}
+
+.icon_options_sidebar {
+    width: 25px;
+    height: 25px;
+}
