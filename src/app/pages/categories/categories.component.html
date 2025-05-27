@@ -1,0 +1,49 @@
+<div class="container-fluid p-0">
+    <div class="card p-3 border-0">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="card-title">Categories</h2>
+            <button class="btn btn-primary" (click)="navigateToAddCategory()">new category</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-white">
+            <h3 class="card-title">Manage Categories</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Type</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @for (category of categories(); track category.categoryId) {
+                        <tr>
+                            <td class="align-middle">{{category.name}}</td>
+                            <td class="align-middle">{{category.type}}</td>
+                            <td class="align-middle">
+                            <div ngbDropdown class="d-inline-block">
+                                <button id="dropdownMenuButtonTransactionButtons" ngbDropdownToggle
+                                    class="btn btn-options">
+                                    <img width="30px" height="30px"
+                                        src="../../../assets/images/icon_transactions_dots.svg" alt="" />
+                                </button>
+                                <div ngbDropdownMenu aria-labelledby="dropdownMenuButtonTransactionButtons">
+                                    <h6 class="title_options">Actions</h6>
+                                    <div class="dropdown-divider"></div>
+                                    <button ngbDropdownItem (click)="editCategory(category.categoryId)">Edit</button>
+                                    <button ngbDropdownItem (click)="deleteCategory(category.categoryId)">Delete</button>
+                                </div>
+                            </div>
+                        </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

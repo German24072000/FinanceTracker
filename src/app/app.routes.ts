@@ -5,6 +5,8 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { RedirectIfLoggedGuard } from './guards/redirect-if-logged.guard';
 import { TransactionsComponent } from './pages/transactions/transactions.component';
 import { MainComponent } from './pages/main/main.component';
+import { CategoriesComponent } from './pages/categories/categories.component';
+import { CategoryFormComponent } from './pages/categories/category-form/category-form.component';
 
 export const routes: Routes = [
     {
@@ -28,9 +30,11 @@ export const routes: Routes = [
         path: 'main',
         component: MainComponent,
         children: [
-            {path: 'dashboard',
-        component: DashboardComponent,},
-            {path: 'transactions', component: TransactionsComponent}
+            {path: 'dashboard', component: DashboardComponent,},
+            {path: 'transactions', component: TransactionsComponent},
+            {path: 'categories', component: CategoriesComponent},
+            {path: 'categories/add', component: CategoryFormComponent},
+            {path: 'categories/edit/:id', component: CategoryFormComponent}
         ]
     }
 ];
