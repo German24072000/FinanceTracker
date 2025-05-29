@@ -32,6 +32,8 @@ export class CategoryFormComponent implements OnInit {
   // isEditMode: boolean = false;
   category: CategoryInterface | null = null;
 
+  private userId = "";
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -41,6 +43,7 @@ export class CategoryFormComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.userId = this.authService.currentUserLoggedIn()!.uid
     this.route.paramMap.subscribe((params) => {
       this.transactionId = params.get('id');
       if (this.transactionId) {
@@ -64,7 +67,7 @@ export class CategoryFormComponent implements OnInit {
           valuesOfForm.categoryId!,
           valuesOfForm.name!,
           valuesOfForm.type!,
-          this.authService.currentUserLoggedIn()?.uid!
+          this.userId
         )
         .subscribe({
           next: () => {
@@ -82,7 +85,7 @@ export class CategoryFormComponent implements OnInit {
         .saveCategory(
           valuesOfForm.name!,
           valuesOfForm.type!,
-          this.authService.currentUserLoggedIn()?.uid!
+          this.userId
         )
         .subscribe({
           next: () => {
@@ -104,7 +107,7 @@ export class CategoryFormComponent implements OnInit {
 
   loadCategory(transactionId: string) {
     this.categoryService
-      .getCategoryById(transactionId)
+      .getCategoryById(this.userId,transactionId)
       .then((categoryFromDb) => {
         this.formCategories.reset({
           categoryId: categoryFromDb.categoryId,

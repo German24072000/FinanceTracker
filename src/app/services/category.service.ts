@@ -1,6 +1,5 @@
 import { inject, Injectable } from '@angular/core';
 import {
-  addDoc,
   collection,
   doc,
   Firestore,
@@ -12,57 +11,80 @@ import {
   DocumentReference,
   deleteDoc,
 } from '@angular/fire/firestore';
-import { CollectionReference, query } from '@firebase/firestore';
+import {
+  CollectionReference,
+  FirestoreDataConverter,
+  query,
+} from '@firebase/firestore';
 import { CategoryInterface } from '../models/category.interface';
 import { from } from 'rxjs';
-import { user } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CategoryService {
   private firestore: Firestore = inject(Firestore);
-  private categoriesCollection: CollectionReference<CategoryInterface> =
-    collection(
-      this.firestore,
-      'categories'
-    ) as CollectionReference<CategoryInterface>;
-
   db = getFirestore();
+
+  categoryConverter: FirestoreDataConverter<CategoryInterface> = {
+    toFirestore: (category: CategoryInterface) => {
+      // const {...data} = category
+      // return data
+      return {
+        categoryId: category.categoryId,
+        name: category.name,
+        type: category.type,
+        userId: category.userId,
+      };
+    },
+    fromFirestore: (snapshot, options) => {
+      const data = snapshot.data(options)!;
+      return {
+        categoryId: data['categoryId'],
+        name: data['name'],
+        type: data['type'],
+        userId: data['username'],
+      } as CategoryInterface;
+    },
+  };
 
   constructor() {}
 
-  async getUserCategories(userId: string) {
-    const categoryCollection = collection(this.db, 'categories');
+  getCategoryCollectionForUser(
+    userId: string
+  ): CollectionReference<CategoryInterface> {
+    return collection(
+      doc(this.db, 'users', userId),
+      'categories'
+    ).withConverter(this.categoryConverter);
+  }
 
-    const q = query(categoryCollection, where('userId', '==', userId));
+  async getUserCategories(userId: string){
+    const categoryCollection = this.getCategoryCollectionForUser(userId);
+    const q = query(categoryCollection, where('userId', '==', userId))
+    const querySnapshot = await getDocs(q)
 
-    const querySnapshot = await getDocs(q);
+    const categories: CategoryInterface[] = []
 
-    const categories: CategoryInterface[] = [];
-
-    querySnapshot.forEach((category) => {
+    querySnapshot.forEach((category) =>{
       const data = category.data();
 
       categories.push({
-        categoryId: category.id,
-        userId: data['userId'],
+        categoryId: data['categoryId'],
         name: data['name'],
         type: data['type'],
+        userId: data['userId'],
       });
     });
 
-    return categories;
+    return categories
   }
 
-  async getCategoryById(categoryId: string) {
-    const categoryCollection = collection(this.db, 'categories');
-    // const q = query(categoryCollection, where('categoryId', '==', categoryId));
-
-    const docRef = doc(this.db, 'categories', categoryId);
-
+  async getCategoryById(userId:string, categoryId: string) {
+    const categoryCollection = this.getCategoryCollectionForUser(userId);
+    
+    const docRef = doc(categoryCollection, categoryId);
     const querySnapshot = await getDoc(docRef);
-
     const data = querySnapshot.data();
 
     const category: CategoryInterface = {
@@ -76,21 +98,26 @@ export class CategoryService {
   }
 
   saveCategory(name: string, type: string, userId: string) {
-    
-    const docRef: DocumentReference<CategoryInterface> = doc(
-      this.categoriesCollection
-    );
+    const categoryCollection = this.getCategoryCollectionForUser(userId);
+
+    //Option 1
+    const docRef = doc(categoryCollection)
+
+    //Option 2
+    // const docRef: DocumentReference<CategoryInterface> =
+    //   doc(categoryCollection);
+
     const newId = docRef.id;
-    const newCategory: CategoryInterface = {
+
+    const categoryToSave: CategoryInterface = {
       categoryId: newId,
       name: name,
       type: type,
       userId: userId,
     };
 
-    const promise = setDoc(docRef, newCategory);
-
-    return from(promise);
+    const promise = setDoc(docRef, categoryToSave);
+    return from(promise)
   }
 
   updateCategory(
@@ -99,7 +126,10 @@ export class CategoryService {
     type: string,
     userId: string
   ) {
-    const referenceOfDoc = doc(this.db, 'categories', categoryId);
+    // const referenceOfDoc = doc(this.db, 'categories', categoryId);
+    const categoryCollection = this.getCategoryCollectionForUser(userId);
+    const docRef = doc(categoryCollection,categoryId);
+
     const categoryData: CategoryInterface = {
       categoryId: categoryId,
       name: name,
@@ -107,13 +137,14 @@ export class CategoryService {
       userId: userId,
     };
 
-    const promise = setDoc(referenceOfDoc, categoryData);
-
+    const promise = setDoc(docRef, categoryData);
     return from(promise);
   }
 
-  deleteCategory(categoryId:string){
-    const promise =  deleteDoc(doc(this.db, "categories", categoryId));
-    return from(promise)
+  deleteCategory(userId:string,categoryId: string) {
+    const categoryCollection = this.getCategoryCollectionForUser(userId);
+    //const promise = deleteDoc(doc(this.db, 'categories', categoryId));
+    const promise = deleteDoc(doc(categoryCollection, categoryId))
+    return from(promise);
   }
 }
