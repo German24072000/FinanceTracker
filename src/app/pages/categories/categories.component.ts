@@ -18,6 +18,8 @@ export class CategoriesComponent implements OnInit {
 
   categories = signal<CategoryInterface[]>([]);
 
+  private userId = "";
+
   constructor(
     private categoryService: CategoryService,
     private router: Router,
@@ -25,9 +27,8 @@ export class CategoriesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.addCategoriesOfUserInTable(
-      this.authService.currentUserLoggedIn()!.uid
-    );
+    this.userId = this.authService.currentUserLoggedIn()!.uid
+    this.addCategoriesOfUserInTable(this.userId);
   }
 
   navigateToAddCategory() {
@@ -39,11 +40,9 @@ export class CategoriesComponent implements OnInit {
   }
 
   deleteCategory(transactionId: string) {
-    this.categoryService.deleteCategory(transactionId).subscribe({
+    this.categoryService.deleteCategory(this.userId,transactionId).subscribe({
       next: () => {
-        this.addCategoriesOfUserInTable(
-          this.authService.currentUserLoggedIn()!.uid
-        );
+        this.addCategoriesOfUserInTable(this.userId);
         this.alertService.sendMessage("Category has been deleted successfully")
       },
       error: (err) => {
