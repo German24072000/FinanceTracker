@@ -4,7 +4,6 @@ export interface TransactionInterface {
   date: Date,
   amount: number,
   description: string,
-  category: string,
-  type: string, // Example of a union type
-  // ... other properties
+  categoryId: string,
+  // type:string,
 }

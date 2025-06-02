@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-transactions',
@@ -15,19 +16,17 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 })
 export class TransactionsComponent implements OnInit {
 
-  // userId = input.required<string>()
+  private userId : string = ""
 
   authService = inject(AuthService)
 
-  constructor(private transactionService: TransactionService){}
+  constructor(private transactionService: TransactionService, private router: Router){}
 
   transactions = signal<TransactionInterface[]>([]);
 
   ngOnInit(): void {
-    // this.transactions.set()
-    
-    // this.transactionService.getUserTransactions(this.userId()).then((transactionsFromFireBase) => {
-      this.transactionService.getUserTransactions(this.authService.currentUserLoggedIn()!.uid).then((transactionsFromFireBase) => {
+      this.userId = this.authService.currentUserLoggedIn()!.uid;
+      this.transactionService.getUserTransactions(this.userId).then((transactionsFromFireBase) => {
 
       this.transactions.set(transactionsFromFireBase)
       
@@ -42,6 +41,10 @@ export class TransactionsComponent implements OnInit {
       console.log(this.transactions());
       
     })
+  }
+
+  navigateToAddTransaction() {
+    this.router.navigateByUrl("/main/transactions/add")
   }
 
 }

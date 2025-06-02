@@ -1,0 +1,55 @@
+<div class="container-fluid p-0">
+    <div class="card p-3 border-0">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="card-title">Add Transaction</h2>
+            <button class="btn btn-primary" (click)="goToCategoriesPage()">Go back</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form [formGroup]="formTransactions" (ngSubmit)="executeSubmit()">
+                <div class="form-group mb-4">
+                    <label for="txtDescription">Description:</label>
+                    <input type="text" class="form-control" id="txtDescription" aria-describedby="enter description"
+                        placeholder="Enter description" formControlName="description">
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="inputDate">Date:</label>
+                    <input type="date" class="form-control" id="inputDate" aria-describedby="enter date"
+                        placeholder="Enter date" formControlName="date">
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="fieldAmount">Amount:</label>
+                    <input type="number" class="form-control" id="fieldAmount" aria-describedby="enter amount"
+                        placeholder="Enter amount" formControlName="amount">
+                </div>
+
+                @if(categoriesOfUser()){
+                <div class="form-group mb-4">
+                    <div class="input-group-prepend">
+                        <label for="selectCategory">Category:</label>
+                    </div>
+                    <select id="selectCategory" class="form-select" aria-label=".form-select-lg example"
+                        formControlName="category">
+                        <!-- <option selected [ngValue]="''">Open this select menu</option> -->
+                        @for (category of categoriesOfUser(); track category.categoryId) {
+                        <option [ngValue]="category.categoryId">{{category.name}}</option>
+                        }
+
+                    </select>
+                </div>
+                }
+
+                @if(isEditMode()) {
+                <button type="submit" class="btn btn-primary">Update Transaction</button>
+                } @else {
+                <button type="submit" class="btn btn-primary">Add Transaction</button>
+                }
+
+            </form>
+        </div>
+    </div>
+</div>
