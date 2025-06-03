@@ -27,19 +27,17 @@ export class TransactionService {
         amount: transaction.amount,
         description: transaction.description,
         categoryId: transaction.categoryId,
-        // type: transaction.type,
       };
     },
     fromFirestore: (snapshot, options) => {
       const data = snapshot.data(options);
       return {
         transactionId: data['transactionId'],
-        userId: data['transactionId'],
-        date: data['transactionId'],
-        amount: data['transactionId'],
-        description: data['transactionId'],
-        categoryId: data['transactionId'],
-        // type: data['transactionId'],
+        userId: data['userId'],
+        date: data['date'],
+        amount: data['amount'],
+        description: data['description'],
+        categoryId: data['categoryId'],
       };
     },
   };
@@ -51,26 +49,29 @@ export class TransactionService {
   }
 
   async getUserTransactions(userId: string) {
-    //get collection
-    const transactionsCollection = collection(this.db, 'transactions');
+
+    const transactionsCollection = this.getTransactionCollectionForUser(userId);
     //build the query
     const q = query(transactionsCollection, where('userId', '==', userId));
+
     //execute the query
     const querySnapshot = await getDocs(q);
 
     const transactions: TransactionInterface[] = [];
 
     //add all transactions from firestore inside transactions
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
+    querySnapshot.forEach((transaction) => {
+      const data = transaction.data();
+      console.log(data);
+      
       transactions.push({
-        transactionId: doc.id,
+        transactionId: transaction.id,
         userId: data['userId'],
         date: data['date'],
         amount: data['amount'],
         description: data['description'],
         // type: data['type'],
-        categoryId: data['category'],
+        categoryId: data['categoryId'],
       });
     });
 
@@ -91,17 +92,9 @@ export class TransactionService {
       amount: amount,
       description: description,
       categoryId: categoryId,
-      // type: type
     }
 
     const promise  =setDoc(docRef, transactionToSave)
     return from(promise)
   }
-
-  // async function getUserTransactions(userId) {
-  //   const transactionsCollection = collection(this.db, "transactions")
-  //   const q = query(transactionsCollection, where("userId", "==", userId))
-  //   const querySnapshot = await getDocs(q);
-  // const transactions = [];
-  // }
 }
