@@ -37,9 +37,7 @@ export class TransactionsComponent implements OnInit {
     const transactionsOfUserFromDb =
       await this.transactionService.getUserTransactions(userId);
 
-    const categoriesOfUserFromDb = await this.categoryService.getUserCategories(
-      userId
-    );
+    const categoriesOfUserFromDb = await this.categoryService.getUserCategories(userId);
     const nameOfCategories = new Map();
 
     categoriesOfUserFromDb.forEach((category) => {
@@ -71,5 +69,10 @@ export class TransactionsComponent implements OnInit {
 
   navigateToAddTransaction() {
     this.router.navigateByUrl('/main/transactions/add');
+  }
+
+  editTransaction(id:string){
+    // this.router.navigateByUrl('/main/transactions/edit');
+    this.router.navigate(['/main/transactions/edit',id])
   }
 }

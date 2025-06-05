@@ -1,7 +1,12 @@
 <div class="container-fluid p-0">
     <div class="card p-3 border-0">
         <div class="d-flex justify-content-between align-items-center">
-            <h2 class="card-title">Add Transaction</h2>
+            @if(isEditMode()){
+                <h2 class="card-title">Update Transaction</h2>
+            } @else {
+                <h2 class="card-title">Add Transaction</h2>
+            }
+            
             <button class="btn btn-primary" (click)="goToCategoriesPage()">Go back</button>
         </div>
     </div>

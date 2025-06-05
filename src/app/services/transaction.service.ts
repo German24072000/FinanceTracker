@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { collection, doc } from '@angular/fire/firestore';
+import { collection, doc, getDoc, updateDoc } from '@angular/fire/firestore';
 import {
   getFirestore,
   query,
@@ -44,12 +44,16 @@ export class TransactionService {
 
   constructor() {}
 
-  getTransactionCollectionForUser(userId: string): CollectionReference<TransactionInterface>{
-    return collection(doc(this.db, 'users', userId), 'transactions').withConverter(this.transactionConverter)
+  getTransactionCollectionForUser(
+    userId: string
+  ): CollectionReference<TransactionInterface> {
+    return collection(
+      doc(this.db, 'users', userId),
+      'transactions'
+    ).withConverter(this.transactionConverter);
   }
 
   async getUserTransactions(userId: string) {
-
     const transactionsCollection = this.getTransactionCollectionForUser(userId);
     //build the query
     const q = query(transactionsCollection, where('userId', '==', userId));
@@ -62,8 +66,7 @@ export class TransactionService {
     //add all transactions from firestore inside transactions
     querySnapshot.forEach((transaction) => {
       const data = transaction.data();
-      console.log(data);
-      
+
       transactions.push({
         transactionId: transaction.id,
         userId: data['userId'],
@@ -78,12 +81,19 @@ export class TransactionService {
     return transactions;
   }
 
-  saveTransaction(userId: string, date: Date, amount: number, description: string, categoryId: string, type: string, ) {
+  saveTransaction(
+    userId: string,
+    date: Date,
+    amount: number,
+    description: string,
+    categoryId: string,
+    type: string
+  ) {
     const transactionsCollection = this.getTransactionCollectionForUser(userId);
 
-    const docRef = doc(transactionsCollection)
+    const docRef = doc(transactionsCollection);
 
-    const newId = docRef.id
+    const newId = docRef.id;
 
     const transactionToSave: TransactionInterface = {
       transactionId: newId,
@@ -92,9 +102,48 @@ export class TransactionService {
       amount: amount,
       description: description,
       categoryId: categoryId,
-    }
+    };
 
-    const promise  =setDoc(docRef, transactionToSave)
-    return from(promise)
+    const promise = setDoc(docRef, transactionToSave);
+    return from(promise);
+  }
+
+  updateTransaction(
+    userId: string,
+    description: string,
+    date: Date,
+    amount: number,
+    categoryId: string,
+    transactionId: string
+  ) {
+    const transactionsCollection = this.getTransactionCollectionForUser(userId);
+    const docRef = doc(transactionsCollection, transactionId);
+
+    const promise = setDoc(docRef, {
+      transactionId: transactionId,
+      userId: userId,
+      date: date,
+      amount: amount,
+      description: description,
+      categoryId: categoryId,
+    } as TransactionInterface);
+
+    return from(promise);
+  }
+
+  async getTransactionById(userId: string, transactionId: string) {
+    const transactionsCollection = this.getTransactionCollectionForUser(userId);
+    const docRef = doc(transactionsCollection, transactionId);
+    const querySnapshot = await getDoc(docRef);
+    let data = querySnapshot.data();
+
+    return {
+      transactionId: data?.transactionId,
+      userId: data?.userId,
+      date: data?.date,
+      amount: data?.amount,
+      description: data?.description,
+      categoryId: data?.categoryId,
+    } as TransactionInterface;
   }
 }

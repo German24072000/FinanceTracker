@@ -6,6 +6,8 @@ import { CategoryInterface } from '../../../models/category.interface';
 import { AuthService } from '../../../services/auth.service';
 import { TransactionService } from '../../../services/transaction.service';
 import { AlertService } from '../../../services/alert.service';
+import { Timestamp } from '@angular/fire/firestore';
+import { TransactionInterface } from '../../../models/transaction.interface';
 
 @Component({
   selector: 'app-transaction-form',
@@ -18,52 +20,123 @@ export class TransactionFormComponent implements OnInit {
     transactionId: new FormControl(''),
     userId: new FormControl(''),
     date: new FormControl(''),
-    amount: new FormControl(''),
+    amount: new FormControl(0),
     description: new FormControl(''),
     category: new FormControl(''),
-    // type: new FormControl(''),
   });
 
-  categoriesOfUser = signal<CategoryInterface[]>([])
+  categoriesOfUser = signal<CategoryInterface[]>([]);
   transactionId: string | null = null;
   isEditMode = signal(false);
 
-  constructor(private router: Router, private route: ActivatedRoute, private categoryService: CategoryService, private authService: AuthService, private transactionService: TransactionService, private alertService: AlertService) {}
-  private userId = ""
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private categoryService: CategoryService,
+    private authService: AuthService,
+    private transactionService: TransactionService,
+    private alertService: AlertService
+  ) {}
+  private userId = '';
 
-  ngOnInit() {
+  async ngOnInit() {
+
     this.userId = this.authService.currentUserLoggedIn()!.uid;
-    this.route.paramMap.subscribe((params)=> {
+
+    this.route.paramMap.subscribe((params) => {
       this.transactionId = params.get('id');
-      if(this.transactionId) {
-        this.isEditMode.set(true);
-      } else {
-        this.isEditMode.set(false)
-        this.categoryService.getUserCategories(this.userId).then((categories) =>{
-          this.categoriesOfUser.set(categories)
-        });
-      }
-    })
+
+      this.fillSelectFieldCategories();
+    });
+
+    if (this.isTransactionUpdated()) {
+      this.isEditMode.set(true);
+
+      let transactionToUpdate = await this.transactionService.getTransactionById(
+          this.userId,
+          this.transactionId!
+        );
+
+      let dateOfTransactionFormatted = this.convertDateToString(transactionToUpdate);
+
+      this.formTransactions.patchValue({
+        transactionId: transactionToUpdate.transactionId,
+        userId: transactionToUpdate.userId,
+        amount: transactionToUpdate.amount,
+        description: transactionToUpdate.description,
+        category: transactionToUpdate.categoryId,
+        date: dateOfTransactionFormatted,
+      });
+    } else {
+      this.isEditMode.set(false);
+    }
+  }
+
+  convertDateToString(transaction: TransactionInterface){
+    let date: Date = new Date();
+    if (transaction.date instanceof Timestamp) {
+      date = (transaction.date as Timestamp).toDate();
+      return date.toISOString().substring(0, 10);
+    } else {
+      return new Date().toISOString().substring(0, 10);
+    }
+  }
+
+  isTransactionUpdated() {
+    if (this.transactionId) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  fillSelectFieldCategories() {
+    this.categoryService.getUserCategories(this.userId).then((categories) => {
+      this.categoriesOfUser.set(categories);
+    });
   }
 
   executeSubmit() {
-    if(this.isEditMode()) {
+    let data = this.formTransactions.getRawValue();
+    let dateToDate: Date;
+
+    if (this.isTransactionUpdated()) {
+      dateToDate = new Date(data.date!);
+      this.transactionService.updateTransaction(this.userId, data.description!,dateToDate, data.amount! ,data.category!, data.transactionId!).subscribe({
+          next: () => {
+            this.alertService.sendMessage(
+              'Transaction has been updated successfully'
+            );
+            this.router.navigateByUrl('main/transactions');
+          },
+          error: (err) => {
+            console.log(err);
+          },
+        });
 
     } else {
-      const data = this.formTransactions.getRawValue();
-      
-      const dateToDate = new Date(data.date!)
 
-      this.transactionService.saveTransaction(this.userId, dateToDate, parseFloat(data.amount!), data.description!, data.category!, "tipo").subscribe({
-        next:()=>{
-          
-          this.alertService.sendMessage("Transaction has been saved successfully")
-          this.router.navigateByUrl('main/transactions')
-        },
-        error:(err) => {
-          console.log(err);
-        }
-      })
+      dateToDate = new Date(data.date!);
+      this.transactionService
+        .saveTransaction(
+          this.userId,
+          dateToDate,
+          data.amount!,
+          data.description!,
+          data.category!,
+          'tipo'
+        )
+        .subscribe({
+          next: () => {
+            this.alertService.sendMessage(
+              'Transaction has been saved successfully'
+            );
+            this.router.navigateByUrl('main/transactions');
+          },
+          error: (err) => {
+            console.log(err);
+          },
+        });
     }
   }
 

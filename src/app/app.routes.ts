@@ -34,6 +34,7 @@ export const routes: Routes = [
             {path: 'dashboard', component: DashboardComponent,},
             {path: 'transactions', component: TransactionsComponent},
             {path: 'transactions/add', component: TransactionFormComponent},
+            {path: 'transactions/edit/:id', component: TransactionFormComponent},
             {path: 'categories', component: CategoriesComponent},
             {path: 'categories/add', component: CategoryFormComponent},
             {path: 'categories/edit/:id', component: CategoryFormComponent}

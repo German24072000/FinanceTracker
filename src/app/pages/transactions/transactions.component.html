@@ -40,7 +40,7 @@
                                 <div ngbDropdownMenu aria-labelledby="dropdownMenuButtonTransactionButtons">
                                     <h6 class="title_options">Actions</h6>
                                     <div class="dropdown-divider"></div>
-                                    <button ngbDropdownItem>Edit</button>
+                                    <button ngbDropdownItem (click)="editTransaction(transaction.transactionId)">Edit</button>
                                     <button ngbDropdownItem>Delete</button>
                                 </div>
                             </div>
