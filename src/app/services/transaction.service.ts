@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { collection, doc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { collection, deleteDoc, doc, getDoc, updateDoc } from '@angular/fire/firestore';
 import {
   getFirestore,
   query,
@@ -145,5 +145,11 @@ export class TransactionService {
       description: data?.description,
       categoryId: data?.categoryId,
     } as TransactionInterface;
+  }
+
+  async deleteTransaction(userId: string, transactionId: string) {
+    const transactionsCollection = this.getTransactionCollectionForUser(userId);
+    const docRef = doc(transactionsCollection, transactionId);
+    await deleteDoc(docRef)
   }
 }

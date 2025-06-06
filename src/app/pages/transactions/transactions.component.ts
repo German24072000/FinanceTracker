@@ -8,6 +8,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { CategoryService } from '../../services/category.service';
 import { DisplayTransactionInterface } from '../../models/displayTransaction.interface';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-transactions',
@@ -25,7 +26,8 @@ export class TransactionsComponent implements OnInit {
   constructor(
     private transactionService: TransactionService,
     private router: Router,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private alertService: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -37,7 +39,9 @@ export class TransactionsComponent implements OnInit {
     const transactionsOfUserFromDb =
       await this.transactionService.getUserTransactions(userId);
 
-    const categoriesOfUserFromDb = await this.categoryService.getUserCategories(userId);
+    const categoriesOfUserFromDb = await this.categoryService.getUserCategories(
+      userId
+    );
     const nameOfCategories = new Map();
 
     categoriesOfUserFromDb.forEach((category) => {
@@ -71,8 +75,19 @@ export class TransactionsComponent implements OnInit {
     this.router.navigateByUrl('/main/transactions/add');
   }
 
-  editTransaction(id:string){
+  editTransaction(id: string) {
     // this.router.navigateByUrl('/main/transactions/edit');
-    this.router.navigate(['/main/transactions/edit',id])
+    this.router.navigate(['/main/transactions/edit', id]);
+  }
+
+  deleteTransaction(id: string) {
+    this.transactionService.deleteTransaction(this.userId, id).then(() => {
+      // window.location.reload();
+      this.getTransactionsWithCategoryName(this.userId);
+
+      this.alertService.sendMessage(
+        'Transaction has been deleted successfully'
+      );
+    });
   }
 }

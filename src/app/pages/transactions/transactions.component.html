@@ -41,7 +41,7 @@
                                     <h6 class="title_options">Actions</h6>
                                     <div class="dropdown-divider"></div>
                                     <button ngbDropdownItem (click)="editTransaction(transaction.transactionId)">Edit</button>
-                                    <button ngbDropdownItem>Delete</button>
+                                    <button ngbDropdownItem (click)="deleteTransaction(transaction.transactionId)">Delete</button>
                                 </div>
                             </div>
                         </td>
