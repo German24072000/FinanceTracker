@@ -7,6 +7,7 @@ import { TransactionsComponent } from './pages/transactions/transactions.compone
 import { MainComponent } from './pages/main/main.component';
 import { CategoriesComponent } from './pages/categories/categories.component';
 import { CategoryFormComponent } from './pages/categories/category-form/category-form.component';
+import { TransactionFormComponent } from './pages/transactions/transaction-form/transaction-form.component';
 
 export const routes: Routes = [
     {
@@ -32,6 +33,8 @@ export const routes: Routes = [
         children: [
             {path: 'dashboard', component: DashboardComponent,},
             {path: 'transactions', component: TransactionsComponent},
+            {path: 'transactions/add', component: TransactionFormComponent},
+            {path: 'transactions/edit/:id', component: TransactionFormComponent},
             {path: 'categories', component: CategoriesComponent},
             {path: 'categories/add', component: CategoryFormComponent},
             {path: 'categories/edit/:id', component: CategoryFormComponent}

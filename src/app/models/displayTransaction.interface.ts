@@ -1,9 +1,9 @@
-export interface TransactionInterface {
+export interface DisplayTransactionInterface {
   transactionId: string,
   userId: string,
   date: Date,
   amount: number,
-  description: string,
+  transactionName: string,
   categoryId: string,
-  // type:string,
+  categoryName: string,
 }
